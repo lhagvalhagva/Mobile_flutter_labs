@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>factorial</title>
+  </head>
+  <body>
+    <h1>Lorem ipsum dolor sit amet consectetur adipisicing</h1>
+    <div id="counter" style="font-size: 29px; text-align: center"></div>
+    <script>
+      function factorial(n) {
+        if (n === 1) {
+          return 1;
+        }
+        return n * factorial(n - 1);
+      }
+      console.log(factorial(5));
+
+      let number = 10;
+      function timeee() {
+        if (number > 0) {
+          document.getElementById("counter").textContent = `${number}`;
+          number--;
+        } else {
+          document.getElementById("counter").textContent =
+            "Тоог хасах дууслаа.";
+          clearInterval(interval);
+        }
+      }
+
+      const interval = setInterval(timeee, 1000);
+
+      function count() {
+        let visits = getCookie("visit count");
+
+        visits++;
+        setCookie("visit count", visits, 3);
+
+        console.log(`Та энэ вэбсайтад ${visits} удаа орсон.`);
+      }
+
+      function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+
+      function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == " ") c = c.substring(1);
+
+          if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+      }
+
+      count();
+    </script>
+  </body>
+</html>
