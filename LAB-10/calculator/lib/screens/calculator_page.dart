@@ -40,13 +40,13 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
     void _onOperatorPressed(String operand) {
-    setState(() {
-        _state = _state.copyWith(
-        num1: double.parse(_state.output), // Эхний тоог хадгалах
-        operand: operand,                  // Үйлдлийг хадгалах
-        newNumber: true,                   // Дараагийн тоо шинэ байна
-        );
-    });
+        setState(() {
+            _state = _state.copyWith(
+            num1: double.parse(_state.output), // Эхний тоог хадгалах
+            operand: operand,                  // Үйлдлийг хадгалах
+            newNumber: true,                   // Дараагийн тоо шинэ байна
+            );
+        });
     }
 
   void _onEqualPressed() {
