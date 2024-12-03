@@ -21,9 +21,11 @@ class HomePage extends StatelessWidget {
     return Consumer<Global_provider>(
       builder: (context, provider, child) {
         return Scaffold(
+           // provider.currentIdx өөрчлөгдөх бүрт харгалзах хуудсыг харуулна
           body: pages[provider.currentIdx],
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
+            // Идэвхтэй tab-ыг provider.currentIdx-ээр тодорхойлно
             currentIndex: provider.currentIdx,
             onTap: provider.changeCurrentIdx,
             items: const [

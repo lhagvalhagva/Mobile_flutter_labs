@@ -15,29 +15,24 @@ class Global_provider extends ChangeNotifier{
 
   bool get isLoggedIn => currentUser != null;
 
+  // Нийт үнийг тооцоолох
+  double get totalPrice {
+    return cartItems.fold(0.0, (sum, item) {
+      return sum + (item.safePrice * getQuantity(item));
+    });
+  }
+  // API-аас авах бүтээгдэхүүнийг products-д оноох
+ 
   void setProducts( List<ProductModel> data){
     // Одоогийн favorite ID-уудыг хадгалах
     final favoriteIds = favorites.map((product) => product.id).toList();
     
     // Шинэ products дээр favorite төлөвийг тохируулах
     products = data.map((product) {
-      product.isFavorite = favoriteIds.contains(product.id);  // төлөвийг шууд оноох
+      product.isFavorite = favoriteIds.contains(product.id);//төлөвийг шууд оноох
       return product;
     }).toList();
     
-    notifyListeners();
-  }
-
-  void addCartItems(ProductModel item){
-    if (!isLoggedIn) {
-      throw Exception('Please login first');
-    }
-    if(cartItems.contains(item)){
-      cartItems.remove(item);
-    }
-    else{
-      cartItems.add(item);
-    }
     notifyListeners();
   }
 
@@ -52,41 +47,33 @@ class Global_provider extends ChangeNotifier{
     if (existingIndex >= 0) {
       // Байвал хасах
       favorites.removeAt(existingIndex);
-      item.isFavorite = false;  // төлөвийг false болгох
+      item.isFavorite = false;
     } else {
       // Байхгүй бол нэмэх
       favorites.add(item);
-      item.isFavorite = true;  // төлөвийг true болгох
+      item.isFavorite = true;
     }
-    
     // Бүх бараан дээр favorite төлөвийг шинэчлэх
     for (var product in products) {
       if (product.id == item.id) {
-        product.isFavorite = item.isFavorite;  // шинэ төлөвийг оноох
+        product.isFavorite = item.isFavorite;
       }
     }
-    
     notifyListeners();
   }
-
-  void login(User user) {
-    currentUser = user;
+  void addCartItems(ProductModel item){
+    if (!isLoggedIn) {
+      throw Exception('Please login first');
+    }
+    if(cartItems.contains(item)){
+      cartItems.remove(item);
+    }
+    else{
+      cartItems.add(item);
+    }
     notifyListeners();
   }
-
-  void logout() {
-    currentUser = null;
-    cartItems.clear();
-    favorites.clear();
-    notifyListeners();
-  }
-
-  void changeCurrentIdx(int idx){
-    currentIdx=idx;
-    notifyListeners();
-  }
-
-  // Тоо ширхэг авах
+    // Тоо ширхэг авах
   int getQuantity(ProductModel product) {
     return _quantities[product.id] ?? 1;
   }
@@ -119,17 +106,30 @@ class Global_provider extends ChangeNotifier{
     notifyListeners();
   }
 
-  // Нийт үнийг тооцоолох
-  double get totalPrice {
-    return cartItems.fold(0.0, (sum, item) {
-      return sum + (item.safePrice * getQuantity(item));
-    });
-  }
-
   // Сагсыг цэвэрлэх
   void clearCart() {
     cartItems.clear();
     _quantities.clear();
     notifyListeners();
   }
+
+  void login(User user) {
+    currentUser = user;
+    notifyListeners();
+  }
+
+  void logout() {
+    currentUser = null;
+    cartItems.clear();
+    favorites.clear();
+    notifyListeners();
+  }
+
+  void changeCurrentIdx(int idx){
+    // Bottom navigation bar-ын идэвхтэй tab-ыг солих
+    currentIdx=idx;
+    notifyListeners();
+  }
+
+
 }

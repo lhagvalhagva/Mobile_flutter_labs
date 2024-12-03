@@ -5,7 +5,7 @@ import 'package:ecommerce/provider/globalProvider.dart';
 
 class Product_detail extends StatelessWidget {
   final ProductModel product; 
-  static const Color primaryPurple = Color(0xFF6200EE);  // Purple өнгө нэмэх
+  static const Color primaryPurple = Color(0xFF6200EE);
   
   const Product_detail(this.product, {super.key});
 
@@ -17,7 +17,7 @@ class Product_detail extends StatelessWidget {
         
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: primaryPurple,  // AppBar өнгө
+            backgroundColor: primaryPurple,
             title: const Text('Product Details'),
             actions: [
               IconButton(
@@ -76,7 +76,7 @@ class Product_detail extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: primaryPurple,  // Үнийн өнгө
+                      color: primaryPurple,
                     ),
                   ),
                 ],

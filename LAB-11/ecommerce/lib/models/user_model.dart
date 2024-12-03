@@ -20,9 +20,17 @@ class User {
     required this.address,
     required this.phone,
   });
-
+  // JSON-оос User объект үүсгэх
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+    // User объектоос JSON үүсгэх
   Map<String, dynamic> toJson() => _$UserToJson(this);
+
+  // API Response -> List<User>
+  static List<User> fromList(List<dynamic> jsonList) {
+    return jsonList
+        .map((json) => User.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 }
 
 @JsonSerializable()

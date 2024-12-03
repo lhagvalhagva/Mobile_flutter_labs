@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:ecommerce/models/product_model.dart';
 import 'package:ecommerce/provider/globalProvider.dart';
 import '../widgets/ProductView.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:ecommerce/services/api_service.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
-  static const Color primaryPurple = Color(0xFF6200EE);  // Purple өнгө нэмэх
+  static const Color primaryPurple = Color(0xFF6200EE);
 
   @override
   State<ShopPage> createState() => _ShopPageState();
@@ -15,6 +17,7 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   Future<List<ProductModel>>? _dataFuture;
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
@@ -23,10 +26,13 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Future<List<ProductModel>> _getData() async {
-    String res = await DefaultAssetBundle.of(context).loadString("assets/products.json");
-    List<ProductModel> data = ProductModel.fromList(jsonDecode(res));
-    Provider.of<Global_provider>(context, listen: false).setProducts(data);
-    return Provider.of<Global_provider>(context, listen: false).products;
+    try {
+      final products = await _apiService.getProducts();
+      Provider.of<Global_provider>(context, listen: false).setProducts(products);
+      return products;
+    } catch (e) {
+      throw Exception('Error fetching products: $e');
+    }
   }
 
   @override
@@ -35,7 +41,7 @@ class _ShopPageState extends State<ShopPage> {
       builder: (context, provider, child) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: ShopPage.primaryPurple,  // AppBar өнгө
+            backgroundColor: ShopPage.primaryPurple,
             title: const Text(
               'Shop',
               style: TextStyle(
@@ -44,9 +50,15 @@ class _ShopPageState extends State<ShopPage> {
               ),
             ),
           ),
-          body: FutureBuilder(
+          body: FutureBuilder<List<ProductModel>>(
             future: _dataFuture,
             builder: ((context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              }
+              
               if (snapshot.hasData) {
                 return SingleChildScrollView(
                   child: Column(
@@ -58,7 +70,7 @@ class _ShopPageState extends State<ShopPage> {
                         child: Wrap(
                           spacing: 20,
                           runSpacing: 10,
-                          children: provider.products  // snapshot.data! оронд provider.products ашиглах
+                          children: provider.products
                               .map((product) => ProductViewShop(product))
                               .toList(),
                         ),

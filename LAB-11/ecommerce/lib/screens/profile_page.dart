@@ -36,7 +36,7 @@ class ProfilePage extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: primaryPurple, // Container өнгө
+                    color: primaryPurple,
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(30),
                       bottomRight: Radius.circular(30),
@@ -49,7 +49,7 @@ class ProfilePage extends StatelessWidget {
                       const CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.white,
-                        child: Icon(Icons.person, size: 50, color: primaryPurple), // Icon өнгө
+                        child: Icon(Icons.person, size: 50, color: primaryPurple), 
                       ),
                       const SizedBox(height: 10),
                       // Name

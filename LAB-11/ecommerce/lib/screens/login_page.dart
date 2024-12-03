@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import '../models/user_model.dart';
 import '../provider/globalProvider.dart';
+import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +16,7 @@ const Color primaryPurple = Color(0xFF6200EE);
 class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final ApiService _apiService = ApiService();
   List<User> _users = [];
   bool _isLoading = true;
 
@@ -25,19 +28,20 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _loadUsers() async {
     try {
-      final String data = await DefaultAssetBundle.of(context)
-          .loadString('assets/users.json');
-      final List<dynamic> jsonList = json.decode(data);
+      _users = await _apiService.getUsers();
       setState(() {
-        _users = jsonList.map((json) => User.fromJson(json)).toList();
         _isLoading = false;
       });
-      print('Loaded ${_users.length} users');
     } catch (e) {
       print('Error loading users: $e');
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading users: $e')),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -52,20 +56,18 @@ class _LoginPageState extends State<LoginPage> {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    print('Attempting login with: $username, $password');
-    print('Available users: ${_users.map((u) => u.username).toList()}');
-
     try {
       final user = _users.firstWhere(
         (user) => user.username == username && user.password == password,
-        orElse: () => throw Exception('Invalid credentials'),
+        orElse: () => throw Exception('Invalid username or password'),
       );
 
       context.read<Global_provider>().login(user);
+      
       Navigator.pushNamedAndRemoveUntil(
         context,
-        '/',  // Home route-руу буцах
-        (route) => false,  // Бүх route-ыг устгах
+        '/',
+        (route) => false,
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -143,5 +145,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
     );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

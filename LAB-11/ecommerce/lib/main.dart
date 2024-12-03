@@ -5,7 +5,9 @@ import '../../../screens/home_page.dart';
 import '../../../screens/login_page.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
+  runApp(
+     // Бүх app-д Provider хүрэх боломжтой болгох
+     ChangeNotifierProvider(
       create: (context) => Global_provider(),
       child: const MyApp()));
 }
@@ -28,3 +30,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

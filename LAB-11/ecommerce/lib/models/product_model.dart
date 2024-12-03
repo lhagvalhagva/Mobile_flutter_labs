@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 part 'product_model.g.dart';
 
-@JsonSerializable(createToJson: false)
+@JsonSerializable()
 class ProductModel {
   final int? id;
   final String? title;
@@ -9,34 +9,33 @@ class ProductModel {
   final String? description;
   final String? category;
   final String? image;
-  final Rating? rating;
   bool isFavorite;
-  int count;
 
   ProductModel({
-    this.isFavorite = false,
     this.id,
     this.title,
     this.price,
     this.description,
     this.category,
     this.image,
-    this.rating,
-    this.count = 1,
+    this.isFavorite = false,
   });
 
+  // JSON -> ProductModel object
+  factory ProductModel.fromJson(Map<String, dynamic> json) => _$ProductModelFromJson(json);
+  
+  // ProductModel object -> JSON
+  Map<String, dynamic> toJson() => _$ProductModelToJson(this);
+
+  // API Response -> List<ProductModel>
+  static List<ProductModel> fromList(List<dynamic> jsonList) {
+    return jsonList
+        .map((json) => ProductModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  // Үнийг аюулгүй авах (null биш)
   double get safePrice => price ?? 0.0;
-
-  ProductModel fromJson(Map<String, dynamic> json) {
-    return _$ProductModelFromJson(json);
-  }
-  
-
-  static List<ProductModel> fromList(List<dynamic> data) => data.map((e) => ProductModel().fromJson(e)).toList();
-  
-  Map<String, dynamic> toJson() {
-    throw UnimplementedError();
-  }
 }
 
 @JsonSerializable(createToJson: false)
