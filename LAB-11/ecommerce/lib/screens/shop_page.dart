@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:ecommerce/models/product_model.dart';
 import 'package:ecommerce/provider/globalProvider.dart';
 import '../widgets/ProductView.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:ecommerce/services/api_service.dart';
 
 class ShopPage extends StatefulWidget {
@@ -95,3 +93,5 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 }
+
+

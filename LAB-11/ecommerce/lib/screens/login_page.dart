@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import '../models/user_model.dart';
 import '../provider/globalProvider.dart';
-import '../services/api_service.dart';
+import '../repository/repository.dart';
+import '../services/storage_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,63 +14,49 @@ const Color primaryPurple = Color(0xFF6200EE);
 class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final ApiService _apiService = ApiService();
-  List<User> _users = [];
-  bool _isLoading = true;
+  final _repository = MyRepository();
+  final _storageService = StorageService();
+  bool _isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUsers();
-  }
+  Future<void> _login() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
 
-  Future<void> _loadUsers() async {
-    try {
-      _users = await _apiService.getUsers();
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error loading users: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading users: $e')),
-        );
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _login() {
-    if (_isLoading) {
+    if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please wait while loading...')),
+        const SnackBar(content: Text('Please enter username and password')),
       );
       return;
     }
 
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      final user = _users.firstWhere(
-        (user) => user.username == username && user.password == password,
-        orElse: () => throw Exception('Invalid username or password'),
-      );
-
-      context.read<Global_provider>().login(user);
+      final token = await _repository.login(username, password);
+      await _storageService.saveToken(token);
       
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/',
-        (route) => false,
-      );
+      if (mounted) {
+        context.read<Global_provider>().setToken(token);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/',
+          (route) => false,
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

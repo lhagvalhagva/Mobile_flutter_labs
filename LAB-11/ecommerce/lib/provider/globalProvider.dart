@@ -13,6 +13,15 @@ class Global_provider extends ChangeNotifier{
   // Бараа бүрийн тоо ширхэгийг хадгалах Map
   final Map<int?, int> _quantities = {};
 
+  String? _token;
+  
+  String? get token => _token;
+
+  void setToken(String token) {
+    _token = token;
+    notifyListeners();
+  }
+
   bool get isLoggedIn => currentUser != null;
 
   // Нийт үнийг тооцоолох
@@ -79,7 +88,7 @@ class Global_provider extends ChangeNotifier{
   }
 
   // Тоо ширхэг нэмэх
-  void increaseQuantity(ProductModel product) {
+  Future<void> increaseQuantity(ProductModel product) async {
     if (product.id != null) {
       _quantities[product.id] = getQuantity(product) + 1;
       notifyListeners();
@@ -87,7 +96,7 @@ class Global_provider extends ChangeNotifier{
   }
 
   // Тоо ширхэг хасах
-  void decreaseQuantity(ProductModel product) {
+  Future<void> decreaseQuantity(ProductModel product) async {
     if (product.id != null) {
       final currentQty = getQuantity(product);
       if (currentQty > 1) {
@@ -98,7 +107,7 @@ class Global_provider extends ChangeNotifier{
   }
 
   // Сагснаас устгах
-  void removeFromCart(ProductModel product) {
+  Future<void> removeFromCart(ProductModel product) async {
     cartItems.remove(product);
     if (product.id != null) {
       _quantities.remove(product.id);
@@ -107,7 +116,7 @@ class Global_provider extends ChangeNotifier{
   }
 
   // Сагсыг цэвэрлэх
-  void clearCart() {
+  Future<void> clearCart() async {
     cartItems.clear();
     _quantities.clear();
     notifyListeners();
@@ -119,9 +128,7 @@ class Global_provider extends ChangeNotifier{
   }
 
   void logout() {
-    currentUser = null;
-    cartItems.clear();
-    favorites.clear();
+    _token = null;
     notifyListeners();
   }
 
